@@ -4,6 +4,7 @@ import { getMenu } from "../../services/apiRestaurant";
 import MenuItem from "./MenuItem";
 
 function Menu() {
+  // const menu = useLoaderData(); এই লাইনটি React Router DOM এর একটি হুক ফাংশন ব্যবহার করে করা হচ্ছে যা সার্ভার থেকে ডেটা লোড করে পাওয়া মেনু তথ্যে সেট করে দেয়।
   const menu = useLoaderData();
 
   return (
