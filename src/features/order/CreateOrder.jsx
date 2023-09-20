@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router-dom";
+import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 
 // https://uibakery.io/regex-library/phone-number
@@ -34,12 +34,16 @@ const fakeCart = [
 function CreateOrder() {
   // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
+  //when submit then it word change dynamically
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+  const formsErrors = useActionData();
 
   return (
     <div>
       <h2>Ready to order? Let's go!</h2>
 
-      {/* <Form method="POST" action="/order/new"> */}
+      {/*React-Router-Dom-{Form} <Form method="POST" action="/order/new"> */}
       <Form method="POST">
         <div>
           <label>First Name</label>
@@ -51,6 +55,7 @@ function CreateOrder() {
           <div>
             <input type="tel" name="phone" required />
           </div>
+          {formsErrors?.phone && <p>{formsErrors.phone}</p>}
         </div>
 
         <div>
@@ -72,9 +77,11 @@ function CreateOrder() {
         </div>
 
         <div>
-          {/* hidden input  */}
+          {/* hidden input : <div> এলিমেন্টটি আপনার ফর্মে একটি গোপন ইনপুট ফিল্ড যোগ করেছে। এই গোপন ইনপুট ফিল্ডটি ব্যবহার করে ডেটা স্টোর করা হয় যা ব্যবহারকারীর দৃষ্টিতে দেখা যায় না, কিন্তু ফর্ম জমা দেওয়া সময় সাথে পাঠানো যায়।*/}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <button>Order now</button>
+          <button disabled={isSubmitting}>
+            {isSubmitting ? "Placing order..." : "Order now"}
+          </button>
         </div>
       </Form>
     </div>
@@ -89,7 +96,14 @@ export async function action({ request }) {
     cart: JSON.parse(data.cart),
     priority: data.priority === "on",
   };
-  console.log(order);
+
+  //jonas-suggetions
+  const errors = {};
+  if (!isValidPhone(order.phone))
+    errors.phone =
+      "Please give us your correct phone number, it might need it to contact you.";
+  if (Object.keys(errors).length > 0) return errors;
+  // top: if  return then under line not work
   const newOrder = await createOrder(order);
   return redirect(`/order/${newOrder.id}`);
 }
