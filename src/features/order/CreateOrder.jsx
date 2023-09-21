@@ -89,7 +89,7 @@ function CreateOrder() {
         <div>
           {/* hidden input : <div> এলিমেন্টটি আপনার ফর্মে একটি গোপন ইনপুট ফিল্ড যোগ করেছে। এই গোপন ইনপুট ফিল্ডটি ব্যবহার করে ডেটা স্টোর করা হয় যা ব্যবহারকারীর দৃষ্টিতে দেখা যায় না, কিন্তু ফর্ম জমা দেওয়া সময় সাথে পাঠানো যায়।*/}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <Button disabled={isSubmitting || !priority}>
+          <Button type="primary" disabled={isSubmitting || !priority}>
             {isSubmitting ? "Placing order..." : "Order now"}
           </Button>
         </div>
