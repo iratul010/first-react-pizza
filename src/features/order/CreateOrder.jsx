@@ -3,9 +3,9 @@ import { createOrder } from "../../services/apiRestaurant";
 import { useState } from "react";
 
 // https://uibakery.io/regex-library/phone-number
-const isValidPhone = str =>
+const isValidPhone = (str) =>
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
-    str
+    str,
   );
 
 const fakeCart = [
@@ -41,7 +41,7 @@ function CreateOrder() {
   const isSubmitting = navigation.state === "submitting";
   const formsErrors = useActionData();
   //my solution-"checked"
-  const handlePriorityChange = e => {
+  const handlePriorityChange = (e) => {
     setPriority(e.target.checked);
   };
   return (
@@ -87,7 +87,12 @@ function CreateOrder() {
         <div>
           {/* hidden input : <div> এলিমেন্টটি আপনার ফর্মে একটি গোপন ইনপুট ফিল্ড যোগ করেছে। এই গোপন ইনপুট ফিল্ডটি ব্যবহার করে ডেটা স্টোর করা হয় যা ব্যবহারকারীর দৃষ্টিতে দেখা যায় না, কিন্তু ফর্ম জমা দেওয়া সময় সাথে পাঠানো যায়।*/}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <button disabled={isSubmitting || !priority}>
+          <button
+            onClick={(e) => e.preventDefault()}
+            className={`rounded-full bg-yellow-400 px-4 py-3 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-300 hover:bg-yellow-300 focus:outline-none 
+            focus:ring focus:ring-yellow-300 focus:ring-offset-2 disabled:cursor-not-allowed `}
+            disabled={isSubmitting || !priority}
+          >
             {isSubmitting ? "Placing order..." : "Order now"}
           </button>
         </div>
@@ -112,8 +117,9 @@ export async function action({ request }) {
       "Please give us your correct phone number, it might need it to contact you.";
   if (Object.keys(errors).length > 0) return errors;
   // top: if  return then under line not work
-  const newOrder = await createOrder(order);
-  return redirect(`/order/${newOrder.id}`);
+  // const newOrder = await createOrder(order);
+  // return redirect(`/order/${newOrder.id}`);
+  return null;
 }
 
 export default CreateOrder;
