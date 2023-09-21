@@ -34,7 +34,7 @@
   /* Create a custom background pattern with alternating stylish colors */
   --c: no-repeat linear-gradient(#f4d03f 0 0, #f4d03f 0 0),
     no-repeat linear-gradient(#e74c3c 0 0, #e74c3c 0 0),
-    no-repeat linear-gradient(#2c3e50 0 0, #2c3e50 0 0);
+    no-repeat linear-gradient(theme(colors.stone.800), theme(colors.stone.800));
 
   /* Apply the background pattern in three parts */
   background:
