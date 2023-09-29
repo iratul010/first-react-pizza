@@ -26,7 +26,14 @@ function CreateOrder() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const formsErrors = useActionData();
-  const username = useSelector((state) => state.user.username);
+  const {
+    username,
+    status: addressStatus,
+    position,
+    address,
+    error: errorAddress,
+  } = useSelector((state) => state.user);
+  const isLoadingAddress = addressStatus === "loading";
   const totalCartPrice = useSelector(getTotalCartPrice);
   const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
   const totalPrice = totalCartPrice + priorityPrice;
@@ -35,7 +42,7 @@ function CreateOrder() {
   return (
     <div className=" px-4 py-6">
       <h2 className="mb-8 text-xl font-semibold">Ready to order? Let's go!</h2>
-      <button onClick={() => dispatch(fetchAddress())}>Get Positions</button>
+
       {/*React-Router-Dom-{Form} <Form method="POST" action="/order/new"> */}
       <Form method="POST">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -62,16 +69,38 @@ function CreateOrder() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="relative flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">Address</label>
           <div className="grow">
             <input
               type="text"
               name="address"
+              disabled={isLoadingAddress}
               required
+              defaultValue={address}
               className="input w-full"
             />
+            {addressStatus === "error" && (
+              <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
+                {errorAddress}
+              </p>
+            )}
           </div>
+
+          {!position.latitude && !position.longitude && (
+            <span className="absolute right-[3px] top-[3.5px] z-50 md:right-[2px] md:top-[12.5px]  ">
+              <Button
+                disabled={isLoadingAddress}
+                type="small"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(fetchAddress());
+                }}
+              >
+                Get Positions
+              </Button>
+            </span>
+          )}
         </div>
 
         <div className="mb-12 flex items-center gap-5">
@@ -93,7 +122,16 @@ function CreateOrder() {
         <div>
           {/* hidden input : <div> এলিমেন্টটি আপনার ফর্মে একটি গোপন ইনপুট ফিল্ড যোগ করেছে। এই গোপন ইনপুট ফিল্ডটি ব্যবহার করে ডেটা স্টোর করা হয় যা ব্যবহারকারীর দৃষ্টিতে দেখা যায় না, কিন্তু ফর্ম জমা দেওয়া সময় সাথে পাঠানো যায়।*/}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <Button type="primary" disabled={isSubmitting || !withPriority}>
+          <input
+            type="hidden"
+            name="position"
+            value={
+              position.latitude && position.longitude
+                ? `${position.latitude}, ${position.longitude}}`
+                : ""
+            }
+          />
+          <Button type="primary" disabled={isSubmitting || isLoadingAddress}>
             {isSubmitting
               ? "Placing order..."
               : `Order Now from ${formatCurrency(totalPrice)}`}
